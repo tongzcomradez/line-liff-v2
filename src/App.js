@@ -1,24 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState } from 'react';
 import './App.css';
 
+const liff = window.liff;
+
 function App() {
+  const closeApp = (event) => {
+    event.preventDefault();
+    liff.sendMessages([{
+      type: 'text',
+      text: "Thank you, Bye!"
+    }]).then(() => {
+      liff.closeWindow();
+    })
+  }
+
+  const [profile, setProfile] = useState({})
+  useEffect(() => {
+    liff.init(async () => {
+      /*
+        @return
+        userId: string
+        displayName: string
+        pictureUrl: string
+      */
+      let profile = await liff.getProfile();
+      setProfile(profile)
+    }); 
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <img src={profile.pictureUrl} width={150} height={150} />
+        <pre>
+          userId: { profile.userId } <br />
+          displayName: { profile.displayName }
+        </pre>
+        <button color="primary" onClick={closeApp}>Close</button>
     </div>
   );
 }
