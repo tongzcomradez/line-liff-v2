@@ -1,41 +1,24 @@
-import React, {useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-
-const liff = window.liff;
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Liff } from './liff'
+import LineProfile from './LineProfile'
 
 function App() {
-  const closeApp = (event) => {
-    event.preventDefault();
-    liff.sendMessages([{
-      type: 'text',
-      text: "Thank you, Bye!"
-    }]).then(() => {
-      liff.closeWindow();
-    })
-  }
-
-  const [profile, setProfile] = useState({})
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
-    liff.init(async () => {
-      /*
-        @return
-        userId: string
-        displayName: string
-        pictureUrl: string
-      */
-      let profile = await liff.getProfile();
-      setProfile(profile)
-    }); 
+    Liff
+      .init({ liffId: '1653531126-gK0A6XJM' })
+      .then(() => {
+        setLoading(!loading)
+      })
   }, [])
 
   return (
-    <div className="App">
-        <img src={profile.pictureUrl} width={150} height={150} />
-        <pre>
-          userId: { profile.userId } <br />
-          displayName: { profile.displayName }
-        </pre>
-        <button color="primary" onClick={closeApp}>Close</button>
+    <div className="Layout">
+      <div className="App">
+        {!loading && <LineProfile />}
+      </div>
     </div>
   );
 }

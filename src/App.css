@@ -1,9 +1,22 @@
+.Layout {
+  height: 100vh;
+  background: #333;
+  padding: 0;
+  margin: 0;
+}
+
 .App {
+  overflow: auto;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  
+  height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 .App-logo {
