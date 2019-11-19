@@ -1,6 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import { Card, Image, Container, Button, Row, Col } from 'react-bootstrap'
-import { Liff } from './liff'
+import React, { Fragment, useEffect, useState } from 'react'
+import { Card, Button, Row, Col } from 'react-bootstrap'
+import {
+    Liff,
+    login,
+    getOS,
+    isInClient,
+    sendMessgae,
+    close,
+    scanCode,
+    getProfile,
+    getLanguage,
+    logout,
+    openWindow,
+} from './liff'
 
 const ProfileDisplay = (props) => {
     const { pictureUrl, userId, displayName, token } = props
@@ -17,81 +29,101 @@ const ProfileDisplay = (props) => {
     )
 }
 
+const LineActions = (props) => {
+    const {
+        handleLogout,
+        handleGetProfile,
+        handleGetToken,
+    } = props
+
+    return (
+        <Fragment>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <input name='message' />
+                </Col>
+                <Col colspan={2}>
+                    <Button block variant="primary" onClick={sendMessgae}>Send Message</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="primary" onClick={openWindow}>Open Window</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="primary" onClick={isInClient}>Is in Client</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="primary" onClick={handleGetProfile}>Get Profile</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="success" onClick={handleGetToken}>Get Token</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="success" onClick={getOS}>Get OS</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="success" onClick={getLanguage}>Get Language</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="success" onClick={scanCode}>ScanCode</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    <Button block variant="success" onClick={close}>Close</Button>
+                </Col>
+            </Row>
+            <Row style={{ margin: 10 }}>
+                <Col>
+                    {
+                        Liff.isLoggedIn() ?
+                            <Button block variant="danger" onClick={handleLogout}>Logout</Button> :
+                            <Button block variant="warning" onClick={login}>Login</Button>
+                    }
+                </Col>
+            </Row>
+
+        </Fragment>
+    )
+}
+
 const LineProfile = () => {
     const [profile, setProfile] = useState({})
     const [token, setToken] = useState('unknow token')
 
-    const Profile = () => {
-        Liff.getProfile().then(res => {
-            setProfile(res)
-        })
+    const handleGetProfile = async () => {
+        const profile = await getProfile()
+        setProfile(profile)
     }
 
-    const Logout = () => {
-        Liff.logout()
-        setProfile({})
-    }
-
-    const Login = () => {
-        Liff.login()
-    }
-    const Token = () => {
+    const handleGetToken = () => {
         const accessToken = Liff.getAccessToken()
         setToken(accessToken)
     }
 
-    const scanCode = () => {
-        Liff.scanCode().then(result => {
-            const stringifiedResult = JSON.stringify(result);
-            alert(stringifiedResult);
-        })
-    }
-
-    const sendMessgae = () => {
-        const text = document.getElementsByName('message')[0].value
-        console.log(text)
-        Liff.sendMessages([
-            {
-                type: 'text',
-                text,
-            }
-        ]).then(e => {
-            close()
-        })
-    }
-
-    const close = () => {
-        Liff.closeWindow()
+    const handleLogout = () => {
+        logout()
+        setProfile({})
     }
 
     useEffect(() => {
-        if (!Liff.isLoggedIn()) {
-            // Liff.login()
-        } else {
-            Profile()
-
+        if (Liff.isLoggedIn()) {
+            handleGetProfile()
         }
     }, [])
-
-    const getOS = () => {
-        alert(Liff.getOS())
-    }
-
-    const getLanguage = () => {
-        alert(Liff.getLanguage())
-    }
-
-
-    const openWindow = () => {
-        Liff.openWindow({
-            url: 'https://line.me',
-            external: true
-        });
-    }
-    
-    const isInClient = () => {
-        alert(Liff.isInClient())
-    }
 
     return (
         <Row>
@@ -102,65 +134,13 @@ const LineProfile = () => {
                     )
                 }
             </Col>
-            <Col>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <input name='message' />
-                    </Col>
-                    <Col colspan={2}>
-                        <Button block variant="primary" onClick={sendMessgae}>send Message</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="primary" onClick={openWindow}>Open Window</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="primary" onClick={isInClient}>Is in Client</Button>
-                    </Col>
-                </Row>
 
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="primary" onClick={Profile}>Get Profile</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="success" onClick={Token}>Get Token</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="success" onClick={getOS}>Get OS</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="success" onClick={getLanguage}>Get Language</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="success" onClick={scanCode}>ScanCode</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        <Button block variant="success" onClick={close}>Close</Button>
-                    </Col>
-                </Row>
-                <Row style={{ margin: 10 }}>
-                    <Col>
-                        {
-                            Liff.isLoggedIn() ?
-                                <Button block variant="danger" onClick={Logout}>Logout</Button> :
-                                <Button block variant="warning" onClick={Login}>Login</Button>
-                        }
-                    </Col>
-                </Row>
+            <Col>
+                <LineActions
+                    handleGetProfile={handleGetProfile}
+                    handleGetToken={handleGetToken}
+                    handleLogout={handleLogout}
+                />
             </Col>
         </Row>
     )
